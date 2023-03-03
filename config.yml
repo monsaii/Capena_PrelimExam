@@ -1,0 +1,65 @@
+---
+
+- hosts: all
+  become: true
+  tasks:
+
+#Installing tasks for Ubuntu
+
+  - name: Installs the latest python3 and pip3 Ubuntu
+    apt:
+      name:
+        - python3
+        - python3-pip
+      state: latest
+      update_cache: yes
+    when: ansible_distribution == "Ubuntu"
+
+  - name: Install Java open-jdk Ubuntu
+    apt:
+      name: openjdk-11-jdk
+      state: latest
+      update_cache: yes
+    when: ansible_distribution == "Ubuntu"
+
+
+#Installing task for CentOS
+
+  - name: Installs the latest python3 and pip3 CentOS
+    dnf:
+      name:
+        - python3
+        - python3-pip
+      state: latest
+      update_cache: yes
+    when: ansible_distribution == "CentOS"
+
+  - name: Install Java open-jdk CentOS
+    dnf:
+      name: java-11-openjdk
+      state: latest
+      update_cache: yes
+    when: ansible_distribution == "CentOS"
+
+  - name: Use pip3 as default pip
+    command: ln -sf /usr/bin/pip3 /usr/bin/pip
+
+
+  - name: Use python3 as default python
+    ansible.builtin.command: update-alternatives --install /usr/bin/python python /usr/bin/python3 1
+
+
+  - name: Create MOTD
+    lineinfile:
+      path: /etc/motd
+      line: |
+        Ansible Managed node by Symon Capena
+      create: yes
+
+  - name: Create user
+    user:
+      name: "{{ username }}
+      password: mypassword
+
+
+
